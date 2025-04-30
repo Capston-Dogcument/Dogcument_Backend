@@ -1,4 +1,4 @@
-package domain.disease.entity;
+package com.example.dogcument.domain.vaccination.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Disease {
+public class Vaccination {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;

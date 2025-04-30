@@ -1,4 +1,4 @@
-package domain.supplement.entity;
+package com.example.dogcument.domain.supplement.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

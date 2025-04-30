@@ -1,11 +1,8 @@
-package domain.diagnosis.entity;
+package com.example.dogcument.domain.vaccination.entity;
 
-import java.time.LocalDateTime;
-
-import domain.dog.entity.Dog;
+import com.example.dogcument.domain.dog.entity.Dog;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class ObesityImage {
+public class DogVaccination {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -26,12 +23,10 @@ public class ObesityImage {
 	@JoinColumn(name = "dog_id")
 	private Dog dog;
 
-	private String url;
-	private LocalDateTime uploadedDate;
-	@Enumerated(EnumType.STRING)
-	private Angle angle;
+	@ManyToOne
+	@JoinColumn(name = "vaccination_id")
+	private Vaccination vaccination;
 
-	public enum Angle {
-		Top, Left, Right, Front, Back
-	}
+	@Column(nullable=false)
+	private Boolean status;
 }

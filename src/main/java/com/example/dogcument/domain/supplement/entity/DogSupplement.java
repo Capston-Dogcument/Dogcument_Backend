@@ -1,6 +1,6 @@
-package domain.medication.entity;
+package com.example.dogcument.domain.supplement.entity;
 
-import domain.dog.entity.Dog;
+import com.example.dogcument.domain.dog.entity.Dog;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class DogMedication {
+public class DogSupplement {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -23,8 +23,8 @@ public class DogMedication {
 	private Dog dog;
 
 	@ManyToOne
-	@JoinColumn(name = "medication_id")
-	private Medication medication;
+	@JoinColumn(name = "supplement_id")
+	private Supplement supplement;
 
 	private Double doseAmount;
 	private Integer dosePerDay;

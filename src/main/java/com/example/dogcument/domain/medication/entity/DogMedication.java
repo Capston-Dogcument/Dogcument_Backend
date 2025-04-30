@@ -1,8 +1,6 @@
-package domain.diagnosis.entity;
+package com.example.dogcument.domain.medication.entity;
 
-import java.time.LocalDateTime;
-
-import domain.dog.entity.Dog;
+import com.example.dogcument.domain.dog.entity.Dog;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class SkinDiseaseImage {
+public class DogMedication {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -24,6 +22,11 @@ public class SkinDiseaseImage {
 	@JoinColumn(name = "dog_id")
 	private Dog dog;
 
-	private String url;
-	private LocalDateTime uploadedDate;
+	@ManyToOne
+	@JoinColumn(name = "medication_id")
+	private Medication medication;
+
+	private Double doseAmount;
+	private Integer dosePerDay;
+	private String doseUnit;
 }

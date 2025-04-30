@@ -1,7 +1,6 @@
-package domain.dog.entity;
+package com.example.dogcument.domain.dog.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +9,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +27,9 @@ public class Dog {
 	@Column(nullable=false)
 	private String breed;
 
+	@Column(nullable = false)
+	private Gender gender;
+
 	@Column(nullable=false)
 	private LocalDate intakeDate;
 
@@ -40,10 +41,25 @@ public class Dog {
 	@Enumerated(EnumType.STRING)
 	private Obesity obesityLevel;
 
-	private int age;
+	private Integer age;
 
-	private String condition;
+	private String dogCondition;
 
+	public Dog(String name, String breed, Gender gender, LocalDate intakeDate, Double weight) {
+		this.name = name;
+		this.breed = breed;
+		this.gender = gender;
+		this.intakeDate = intakeDate;
+		this.weight = weight;
+		this.neutered = null;
+		this.age = null;
+		this.dogCondition = "";
+		this.obesityLevel = null;
+	}
+
+	public enum Gender {
+		수컷, 암컷
+	}
 	public enum Obesity {
 		과제충, 정상, 저체중
 	}
