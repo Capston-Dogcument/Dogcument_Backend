@@ -18,7 +18,7 @@ public class DogInfoCreateResDto {
 	private String breed;
 	private Double weight;
 	private LocalDate intakeDate;
-	private String gender;
+	private Dog.Gender gender;
 
 	public static DogInfoCreateResDto from(Dog dog) {
 		return DogInfoCreateResDto.builder()
@@ -27,7 +27,7 @@ public class DogInfoCreateResDto {
 			.breed(dog.getBreed())
 			.weight(dog.getWeight())
 			.intakeDate(dog.getIntakeDate())
-			.gender(dog.getGender().toString())
+			.gender(dog.getGender())
 			.build();
 	}
 }

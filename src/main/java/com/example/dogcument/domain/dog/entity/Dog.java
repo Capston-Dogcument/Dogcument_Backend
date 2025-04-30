@@ -2,6 +2,8 @@ package com.example.dogcument.domain.dog.entity;
 
 import java.time.LocalDate;
 
+import com.example.dogcument.domain.dog.dto.DogInfoUpdateReqDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -60,7 +62,19 @@ public class Dog {
 	public enum Gender {
 		수컷, 암컷
 	}
+
 	public enum Obesity {
 		과제충, 정상, 저체중
+	}
+
+	public void updateFromDto(DogInfoUpdateReqDto dto) {
+		if (dto.getName() != null) this.name = dto.getName();
+		if (dto.getBreed() != null) this.breed = dto.getBreed();
+		if (dto.getGender() != null) this.gender = dto.getGender();
+		if (dto.getIntakeDate() != null) this.intakeDate = dto.getIntakeDate();
+		if (dto.getWeight() != null) this.weight = dto.getWeight();
+		if (dto.getNeutered() != null) this.neutered = dto.getNeutered();
+		if (dto.getAge() != null) this.age = dto.getAge();
+		if (dto.getDogCondition() != null) this.dogCondition = dto.getDogCondition();
 	}
 }
