@@ -20,6 +20,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Build project with Gradle
+        run: ./gradlew clean build
+
+      - name: Upload JAR to EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
