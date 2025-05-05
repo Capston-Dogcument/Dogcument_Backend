@@ -28,7 +28,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: "build/libs/*.jar"
+          source: "build/libs/app.jar"
           target: "~/dogcument"
 
       - name: Deploy via SSH
@@ -41,7 +41,7 @@ jobs:
             cd ~/dogcument
             echo "Creating Dockerfile"
             echo 'FROM openjdk:17-slim
-            COPY *.jar app.jar
+            COPY app.jar app.jar
             ENTRYPOINT ["java", "-jar", "/app.jar"]' > Dockerfile
             
             echo "Stopping old container"
