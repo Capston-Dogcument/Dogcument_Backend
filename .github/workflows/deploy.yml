@@ -20,7 +20,8 @@ jobs:
           distribution: 'temurin'
 
       - name: Build project with Gradle
-        run: ./gradlew clean bootJar -x test
+        run: ./gradlew clean build -x test
+        working-directory: dogcument
 
       - name: Upload JAR to EC2
         uses: appleboy/scp-action@master
@@ -28,7 +29,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: "build/libs/*.jar"
+          source: "dogcument/build/libs/*.jar"
           target: "~/dogcument"
 
       - name: Deploy via SSH
