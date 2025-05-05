@@ -29,7 +29,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'mysql:mysql-connector-java:8.0.33'
 
-	implementation 'software.amazon.awssdk:s3'
+	implementation 'software.amazon.awssdk:s3:2.25.25'
 }
 
 tasks.named('test') {
