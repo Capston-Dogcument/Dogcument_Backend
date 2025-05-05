@@ -60,8 +60,7 @@ jobs:
             docker run -d \
               --name dogcument \
               --network=host \
-              -e DB_URL="${DB_URL}" \
-              -e DB_USER="${DB_USER}" \
-              -e DB_PASSWORD="${DB_PASSWORD}" \
+              -e DB_URL="${{ secrets.DB_URL }}" \
+              -e DB_USER="${{ secrets.DB_USER }}" \
+              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
               dogcument-image
-          envs: DB_URL, DB_USER, DB_PASSWORD
