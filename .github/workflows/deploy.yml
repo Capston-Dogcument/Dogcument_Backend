@@ -28,9 +28,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: |
-            build/libs/app.jar
-            .env
+          source: "build/libs/app.jar"
           target: "~/dogcument"
 
       - name: Deploy via SSH
@@ -62,5 +60,7 @@ jobs:
             docker run -d \
             --name dogcument \
             --network=host \
-            --env-file .env \
+            -e DB_URL=${{ secrets.DB_URL }} \
+            -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             dogcument-image
