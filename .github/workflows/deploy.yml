@@ -39,6 +39,10 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd ~/dogcument
+            
+            echo "Moving jar into build context"
+            cp build/libs/app.jar .
+            
             echo "Creating Dockerfile"
             echo 'FROM openjdk:17-slim
             COPY app.jar app.jar
