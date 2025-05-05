@@ -50,7 +50,7 @@ jobs:
             docker rmi dogcument-image || true
             
             echo "Building Docker image"
-            docker build -t dogcument-image
+            docker build -t dogcument-image .
             
             echo "Running Docker container"
             docker run -d --name dogcument --network=host dogcument-image
