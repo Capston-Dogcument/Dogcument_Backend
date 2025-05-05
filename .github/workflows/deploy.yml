@@ -58,9 +58,9 @@ jobs:
             
             echo "Running Docker container"
             docker run -d \
-             --name dogcument \
-             --network=host \
-             -e DB_URL=${{ secrets.DB_URL }} \
-             -e DB_USER=${{ secrets.DB_USER }} \
-             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-             dogcument-image
+              --name dogcument \
+              --network=host \
+              -e DB_URL="${DB_URL}" \
+              -e DB_USER="${DB_USER}" \
+              -e DB_PASSWORD="${DB_PASSWORD}" \
+              dogcument-image
