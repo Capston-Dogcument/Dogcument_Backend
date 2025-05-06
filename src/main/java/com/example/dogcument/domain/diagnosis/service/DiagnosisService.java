@@ -55,7 +55,7 @@ public class DiagnosisService {
 			String url = s3Service.uploadFile(image, dogId, photoType);
 			uploadedUrls.add(url);
 
-			ObesityImage obesityImage = new ObesityImage(dog, url, ObesityImage.Angle.valueOf(photoType));
+			ObesityImage obesityImage = new ObesityImage(dog, url, ObesityImage.Angle.valueOf(photoType.toUpperCase()));
 
 			obesityImageRepository.save(obesityImage);
 		}
@@ -71,9 +71,13 @@ public class DiagnosisService {
 			.map(ObesityImage::getUrl)
 			.toList();
 
+		if (urls.isEmpty())
+			throw new EntityNotFoundException("해당 강아지의 사진이 존재하지 않습니다.");
+
 		DiagnosisObesityAIResDto aiResDto = aiService.diagnosisObesity(dog, urls);
 
 		dog.saveObesity(aiResDto.getObesity());
+		System.out.println("obesity result: " + dog.getObesityLevel());
 		dogInfoRepository.save(dog);
 
 		return new DiagnosisObesityResultResDto(dog.getId(), aiResDto.getObesity());

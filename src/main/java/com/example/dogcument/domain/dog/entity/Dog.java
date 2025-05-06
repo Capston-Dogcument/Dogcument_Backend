@@ -64,7 +64,7 @@ public class Dog {
 	}
 
 	public enum Obesity {
-		과제충, 정상, 저체중
+		비만, 정상, 마름
 	}
 
 	public void updateFromDto(DogInfoUpdateReqDto dto) {
@@ -79,6 +79,6 @@ public class Dog {
 	}
 
 	public void saveObesity(String obesity) {
-		this.obesityLevel = Obesity.valueOf(obesity);
+		this.obesityLevel = Obesity.valueOf(obesity.trim());
 	}
 }

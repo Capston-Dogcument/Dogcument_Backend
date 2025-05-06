@@ -85,15 +85,20 @@ public class AIService {
 	}
 
 	public DiagnosisObesityAIResDto diagnosisObesity(Dog dog, List<String> imgUrls) {
-		DiagnosisObesityAIReqDto reqDto = new DiagnosisObesityAIReqDto(dog.getId(), dog.getWeight(), imgUrls);
+		DiagnosisObesityAIReqDto reqDto = new DiagnosisObesityAIReqDto(dog.getId().toString(), dog, imgUrls);
 
 		try {
-			ResponseEntity<DiagnosisObesityAIResDto> resDto = restTemplate.postForEntity(
+			ResponseEntity<String> response = restTemplate.postForEntity(
 				AIServerUrl + "/api/ai/obesity/predict",
-				reqDto, DiagnosisObesityAIResDto.class
+				reqDto, String.class
 			);
 
-			return resDto.getBody();
+			String json = response.getBody();
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			DiagnosisObesityAIResDto resDto = objectMapper.readValue(json, DiagnosisObesityAIResDto.class);
+
+			return resDto;
 
 		} catch (HttpClientErrorException.UnprocessableEntity e) {
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -104,7 +109,8 @@ public class AIService {
 					.collect(Collectors.joining(", "));
 				throw new RuntimeException("AI 서버 오류: " + errorMsg);
 			} catch (IOException ex) {
-				throw new RuntimeException("AI 오류 응답 파싱 실패", ex);
+				System.out.println(e.getResponseBodyAsString());
+				throw new RuntimeException("AI 오류 응답 파싱 실패" + ex.getMessage());
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("AI 서버 요청 실패: " + e.getMessage(), e);

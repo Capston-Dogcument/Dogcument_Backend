@@ -8,13 +8,24 @@ import lombok.Getter;
 
 @Getter
 public class DiagnosisObesityAIReqDto {
-	private Long dogId;
-	private Double weight;
-	private List<String> imgUrls;
+	private String dogId;
+	private DogInfo dogInfo;
+	private List<String> photoUrls;
 
-	public DiagnosisObesityAIReqDto(Long id, Double weight, List<String> imgUrls) {
+	@Getter
+	public class DogInfo {
+		private int age;
+		private String breed;
+		private double weight;
+	}
+	public DiagnosisObesityAIReqDto(String id, Dog dog, List<String> urls) {
 		this.dogId = id;
-		this.weight = weight;
-		this.imgUrls = imgUrls;
+
+		this.dogInfo = new DogInfo();
+		this.dogInfo.age = dog.getAge();
+		this.dogInfo.breed = dog.getBreed();
+		this.dogInfo.weight = dog.getWeight();
+
+		this.photoUrls=urls;
 	}
 }
