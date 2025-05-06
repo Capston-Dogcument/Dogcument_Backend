@@ -77,7 +77,6 @@ public class DiagnosisService {
 		DiagnosisObesityAIResDto aiResDto = aiService.diagnosisObesity(dog, urls);
 
 		dog.saveObesity(aiResDto.getObesity());
-		System.out.println("obesity result: " + dog.getObesityLevel());
 		dogInfoRepository.save(dog);
 
 		return new DiagnosisObesityResultResDto(dog.getId(), aiResDto.getObesity());
