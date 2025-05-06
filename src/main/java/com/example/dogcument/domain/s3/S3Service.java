@@ -1,6 +1,7 @@
 package com.example.dogcument.domain.s3;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -26,9 +27,12 @@ public class S3Service {
 	@Value("${aws.region}")
 	private String region;
 
-	public String uploadFile(MultipartFile file) throws IOException {
-		String key = "images/" + UUID.randomUUID() + "_" +
-			URLEncoder.encode(file.getOriginalFilename(), StandardCharsets.UTF_8);
+	public String uploadFile(MultipartFile file, Long dogId, String photoType) throws IOException {
+		String uuid = UUID.randomUUID().toString();
+		String originalFilename = URLEncoder.encode(file.getOriginalFilename(), StandardCharsets.UTF_8);
+		String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+		String key = "images/" + dogId + "-" + photoType + "-" + uuid + "." + extension;
 
 		S3Client s3 = S3Client.builder()
 			.region(Region.of(region))
@@ -40,7 +44,6 @@ public class S3Service {
 				.bucket(bucket)
 				.key(key)
 				.contentType(file.getContentType())
-				.acl("public-read")
 				.build(),
 			RequestBody.fromInputStream(file.getInputStream(), file.getSize())
 		);

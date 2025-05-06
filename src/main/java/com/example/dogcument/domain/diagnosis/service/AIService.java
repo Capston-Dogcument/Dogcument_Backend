@@ -1,29 +1,24 @@
 package com.example.dogcument.domain.diagnosis.service;
 
-import static org.springframework.web.servlet.function.RequestPredicates.*;
 
 import java.io.IOException;
-import java.net.http.HttpHeaders;
 import java.util.List;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.dogcument.domain.diagnosis.dto.AIResponse;
+import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResponse;
 import com.example.dogcument.domain.diagnosis.dto.ValidationResult;
 
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +27,7 @@ public class AIService {
 
 	private final WebClient webClient = WebClient.builder().baseUrl(AIServerUrl).build();
 
-	public AIResponse validateImg(List<MultipartFile> images) throws IOException {
+	public ValidateImgsResponse validateImg(List<MultipartFile> images) throws IOException {
 		MultipartBodyBuilder builder = new MultipartBodyBuilder();
 
 		for (MultipartFile file : images) {
@@ -46,12 +41,12 @@ public class AIService {
 
 		MultiValueMap<String, HttpEntity<?>> multipartData = builder.build();
 
-		AIResponse response = webClient.post()
+		ValidateImgsResponse response = webClient.post()
 			.uri("/api/ai/validate/photos")
 			.contentType(MediaType.MULTIPART_FORM_DATA)
 			.bodyValue(multipartData)
 			.retrieve()
-			.bodyToMono(AIResponse.class)
+			.bodyToMono(ValidateImgsResponse.class)
 			.block();
 
 		List<ValidationResult> failedImages = response.validationResults().stream()
