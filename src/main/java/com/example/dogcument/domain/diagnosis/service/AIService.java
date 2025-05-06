@@ -3,20 +3,31 @@ package com.example.dogcument.domain.diagnosis.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.ErrorResponse;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityAIReqDto;
+import com.example.dogcument.domain.diagnosis.dto.AIErrorResDto;
+import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityAIResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResponse;
 import com.example.dogcument.domain.diagnosis.dto.ValidationResult;
+import com.example.dogcument.domain.dog.entity.Dog;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class AIService {
 	String AIServerUrl = "http://116.123.110.162:4000";
 
+	private final RestTemplate restTemplate;
 	private final WebClient webClient = WebClient.builder().baseUrl(AIServerUrl).build();
 
 	public ValidateImgsResponse validateImg(List<MultipartFile> images) throws IOException {
@@ -70,5 +82,38 @@ public class AIService {
 		}
 
 		return response;
+	}
+
+	public DiagnosisObesityAIResDto diagnosisObesity(Dog dog, List<String> imgUrls) {
+		DiagnosisObesityAIReqDto reqDto = new DiagnosisObesityAIReqDto(dog.getId().toString(), dog, imgUrls);
+
+		try {
+			ResponseEntity<String> response = restTemplate.postForEntity(
+				AIServerUrl + "/api/ai/obesity/predict",
+				reqDto, String.class
+			);
+
+			String json = response.getBody();
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			DiagnosisObesityAIResDto resDto = objectMapper.readValue(json, DiagnosisObesityAIResDto.class);
+
+			return resDto;
+
+		} catch (HttpClientErrorException.UnprocessableEntity e) {
+			ObjectMapper objectMapper = new ObjectMapper();
+			try {
+				AIErrorResDto error = objectMapper.readValue(e.getResponseBodyAsString(), AIErrorResDto.class);
+				String errorMsg = error.getDetail().stream()
+					.map(AIErrorResDto.Detail::getMsg)
+					.collect(Collectors.joining(", "));
+				throw new RuntimeException("AI 서버 오류: " + errorMsg);
+			} catch (IOException ex) {
+				System.out.println(e.getResponseBodyAsString());
+				throw new RuntimeException("AI 오류 응답 파싱 실패" + ex.getMessage());
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("AI 서버 요청 실패: " + e.getMessage(), e);
+		}
 	}
 }

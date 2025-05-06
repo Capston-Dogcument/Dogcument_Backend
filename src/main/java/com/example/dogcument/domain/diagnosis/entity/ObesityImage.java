@@ -32,7 +32,7 @@ public class ObesityImage {
 	private Angle angle;
 
 	public enum Angle {
-		top, left, right, front, back
+		TOP, LEFT, RIGHT, FRONT, BACK
 	}
 
 	public ObesityImage(Dog dog, String url, Angle angle) {

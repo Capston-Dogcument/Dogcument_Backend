@@ -29,10 +29,21 @@ public class S3Service {
 
 	public String uploadFile(MultipartFile file, Long dogId, String photoType) throws IOException {
 		String uuid = UUID.randomUUID().toString();
-		String originalFilename = URLEncoder.encode(file.getOriginalFilename(), StandardCharsets.UTF_8);
-		String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
 
-		String key = "images/" + dogId + "-" + photoType + "-" + uuid + "." + extension;
+		String originalFilename = file.getOriginalFilename();
+		String extension = "";
+		int dotIndex = originalFilename.lastIndexOf(".");
+		if (dotIndex != -1) {
+			extension = originalFilename.substring(dotIndex + 1);
+		}
+
+		String filename = dogId + "-" + photoType + "-" + uuid + "." + extension;
+		String key = "images/" + URLEncoder.encode(filename, StandardCharsets.UTF_8);
+
+		String contentType = file.getContentType();
+		if (contentType == null) {
+			contentType = "image/jpeg";
+		}
 
 		S3Client s3 = S3Client.builder()
 			.region(Region.of(region))
@@ -43,7 +54,7 @@ public class S3Service {
 			PutObjectRequest.builder()
 				.bucket(bucket)
 				.key(key)
-				.contentType(file.getContentType())
+				.contentType(contentType)
 				.build(),
 			RequestBody.fromInputStream(file.getInputStream(), file.getSize())
 		);
