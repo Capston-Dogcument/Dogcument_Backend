@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityAIResDto;
+import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityResultResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResponse;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidationResult;
@@ -58,5 +61,21 @@ public class DiagnosisService {
 		}
 
 		return new ValidateImgsResDto(uploadedUrls);
+	}
+
+	public DiagnosisObesityResultResDto diagnosisObesity(Long dogId) {
+		Dog dog = dogInfoRepository.findById(dogId)
+			.orElseThrow(()-> new EntityNotFoundException("해당 ID의 강아지를 찾을 수 없습니다"));
+
+		List<String> urls = obesityImageRepository.findAllByDogId(dogId).stream()
+			.map(ObesityImage::getUrl)
+			.toList();
+
+		DiagnosisObesityAIResDto aiResDto = aiService.diagnosisObesity(dog, urls);
+
+		dog.saveObesity(aiResDto.getObesity());
+		dogInfoRepository.save(dog);
+
+		return new DiagnosisObesityResultResDto(dog.getId(), aiResDto.getObesity());
 	}
 }

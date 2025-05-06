@@ -77,4 +77,8 @@ public class Dog {
 		if (dto.getAge() != null) this.age = dto.getAge();
 		if (dto.getDogCondition() != null) this.dogCondition = dto.getDogCondition();
 	}
+
+	public void saveObesity(String obesity) {
+		this.obesityLevel = Obesity.valueOf(obesity);
+	}
 }
