@@ -32,6 +32,13 @@ public class ObesityImage {
 	private Angle angle;
 
 	public enum Angle {
-		Top, Left, Right, Front, Back
+		top, left, right, front, back
+	}
+
+	public ObesityImage(Dog dog, String url, Angle angle) {
+		this.dog = dog;
+		this.url = url;
+		this.angle = angle;
+		this.uploadedDate = LocalDateTime.now();
 	}
 }
