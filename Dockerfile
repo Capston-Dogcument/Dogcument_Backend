@@ -1,5 +1,5 @@
 FROM openjdk:17-jdk-slim
 
-COPY dogcument.jar app.jar
+COPY app.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "/app.jar"]

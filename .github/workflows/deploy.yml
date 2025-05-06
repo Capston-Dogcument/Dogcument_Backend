@@ -1,0 +1,66 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build project with Gradle
+        run: ./gradlew clean bootJar -x test
+
+      - name: Upload JAR to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "build/libs/app.jar"
+          target: "~/dogcument"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd ~/dogcument
+            
+            echo "Moving jar into build context"
+            cp build/libs/app.jar .
+            
+            echo "Creating Dockerfile"
+            echo 'FROM openjdk:17-slim
+            COPY app.jar app.jar
+            ENTRYPOINT ["java", "-jar", "/app.jar"]' > Dockerfile
+            
+            echo "Stopping old container"
+            docker stop dogcument || true
+            docker rm dogcument || true
+            docker rmi dogcument-image || true
+            
+            echo "Building Docker image"
+            docker build -t dogcument-image .
+            
+            echo "Running Docker container"
+            docker run -d \
+              --name dogcument \
+              --network=host \
+              -e DB_URL="${{ secrets.DB_URL }}" \
+              -e DB_USER="${{ secrets.DB_USER }}" \
+              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+              dogcument-image
