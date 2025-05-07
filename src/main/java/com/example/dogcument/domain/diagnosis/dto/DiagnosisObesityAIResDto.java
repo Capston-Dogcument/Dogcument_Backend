@@ -13,13 +13,13 @@ public class DiagnosisObesityAIResDto {
 	private String obesity;
 
 	@JsonCreator
-	public DiagnosisObesityAIResDto(
-		@JsonProperty("obesity") String obesity,
+	public DiagnosisObesityAIResDto (
 		@JsonProperty("message") String message,
-		@JsonProperty("dogId") String dogId
+		@JsonProperty("dogId") String dogId,
+		@JsonProperty("obesity") String obesity
 	) {
-		this.obesity = obesity;
 		this.message = message;
 		this.dogId = dogId;
+		this.obesity = obesity;
 	}
 }
