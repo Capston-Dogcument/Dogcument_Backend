@@ -18,6 +18,8 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,6 +27,7 @@ import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityAIReqDto;
 import com.example.dogcument.domain.diagnosis.dto.AIErrorResDto;
 import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityAIResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResponse;
+import com.example.dogcument.domain.diagnosis.dto.ValidateSkinAIResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidationResult;
 import com.example.dogcument.domain.dog.entity.Dog;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,4 +119,39 @@ public class AIService {
 			throw new RuntimeException("AI 서버 요청 실패: " + e.getMessage(), e);
 		}
 	}
+
+	//predict_url = "https://GyeongJae-Dogcument-Skin-Disease-AI.hf.space/predict"
+	// validate_url = "https://GyeongJae-Dogcument-Skin-Disease-AI.hf.space/validate-image"
+	String skinAIServer = "https://GyeongJae-Dogcument-Skin-Disease-AI.hf.space";
+
+	private final WebClient skinWebClient = WebClient.builder().baseUrl(skinAIServer).build();
+
+
+	public ValidateSkinAIResDto validateSkinImg(MultipartFile image) throws IOException {
+		MultipartBodyBuilder builder = new MultipartBodyBuilder();
+
+		builder.part("image", new ByteArrayResource(image.getBytes()) {
+			@Override
+			public String getFilename() {
+				return image.getOriginalFilename();
+			}
+		}).contentType(MediaType.IMAGE_JPEG);
+
+		MultiValueMap<String, HttpEntity<?>> multipartData = builder.build();
+
+		ValidateSkinAIResDto resDto = skinWebClient.post()
+			.uri("/validate-image")
+			.contentType(MediaType.MULTIPART_FORM_DATA)
+			.body(BodyInserters.fromMultipartData(multipartData))
+			.retrieve()
+			.onStatus(status -> status.value() == 422, clientResponse ->
+				clientResponse.bodyToMono(String.class).map(
+					errorBody -> new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, errorBody)
+				))
+			.bodyToMono(ValidateSkinAIResDto.class)
+			.block();
+
+		return resDto;
+	}
+
 }

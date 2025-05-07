@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityResultResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResDto;
+import com.example.dogcument.domain.diagnosis.dto.ValidateSkinImgResDto;
 import com.example.dogcument.domain.diagnosis.service.DiagnosisService;
 
 @RestController
@@ -45,5 +46,19 @@ public class DiagnosisController {
 	public ResponseEntity<DiagnosisObesityResultResDto> diagnosisObesity(@PathVariable Long dogId) {
 		DiagnosisObesityResultResDto resDto = diagnosisService.diagnosisObesity(dogId);
 		return ResponseEntity.ok(resDto);
+	}
+
+	@PostMapping("/skin/upload")
+	public ResponseEntity<?> validateSkinUpload(
+		@RequestParam("image") MultipartFile image,
+		@RequestParam("dogId") Long dogId) {
+		try {
+			ValidateSkinImgResDto resDto = diagnosisService.validateAndSaveSkinImg(image, dogId);
+			return ResponseEntity.ok(resDto);
+		} catch (ResponseStatusException e) {
+			return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

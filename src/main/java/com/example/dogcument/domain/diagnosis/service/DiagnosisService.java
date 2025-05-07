@@ -7,16 +7,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityAIResDto;
 import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityResultResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResponse;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResDto;
+import com.example.dogcument.domain.diagnosis.dto.ValidateSkinAIResDto;
+import com.example.dogcument.domain.diagnosis.dto.ValidateSkinImgResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidationResult;
 import com.example.dogcument.domain.diagnosis.entity.ObesityImage;
+import com.example.dogcument.domain.diagnosis.entity.SkinDiseaseImage;
 import com.example.dogcument.domain.diagnosis.repository.ObesityImageRepository;
+import com.example.dogcument.domain.diagnosis.repository.SkinDiseaseImageRepository;
 import com.example.dogcument.domain.dog.entity.Dog;
 import com.example.dogcument.domain.dog.repository.DogInfoRepository;
 import com.example.dogcument.domain.s3.S3Service;
@@ -30,13 +36,15 @@ public class DiagnosisService {
 	private final S3Service s3Service;
 	private final DogInfoRepository dogInfoRepository;
 	private final ObesityImageRepository obesityImageRepository;
+	private final SkinDiseaseImageRepository skinDiseaseImageRepository;
 
 	public DiagnosisService(AIService aiService, S3Service s3Service, DogInfoRepository dogInfoRepository,
-		ObesityImageRepository obesityImageRepository) {
+		ObesityImageRepository obesityImageRepository, SkinDiseaseImageRepository skinDiseaseImageRepository) {
 		this.aiService = aiService;
 		this.s3Service = s3Service;
 		this.dogInfoRepository = dogInfoRepository;
 		this.obesityImageRepository = obesityImageRepository;
+		this.skinDiseaseImageRepository = skinDiseaseImageRepository;
 	}
 
 	private static final List<String> PHOTO_TYPE_ORDER = List.of("front", "left", "back", "right", "top");
@@ -80,5 +88,27 @@ public class DiagnosisService {
 		dogInfoRepository.save(dog);
 
 		return new DiagnosisObesityResultResDto(dog.getId(), aiResDto.getObesity());
+	}
+
+	public ValidateSkinImgResDto validateAndSaveSkinImg(MultipartFile image, Long dogId) throws IOException {
+		Dog dog = dogInfoRepository.findById(dogId)
+			.orElseThrow(()-> new EntityNotFoundException("해당 ID의 강아지를 찾을 수 없습니다"));
+
+		ValidateSkinAIResDto validateSkinAIResDto = aiService.validateSkinImg(image);
+
+		String uploadedUrl = "";
+
+		if (validateSkinAIResDto.isValid()) {
+			uploadedUrl = s3Service.uploadFile(image, dogId, "skin");
+
+			SkinDiseaseImage skinDiseaseImage = new SkinDiseaseImage(dog, uploadedUrl);
+
+			skinDiseaseImageRepository.save(skinDiseaseImage);
+		}
+		else {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않는 이미지입니다");
+		}
+
+		return new ValidateSkinImgResDto(uploadedUrl);
 	}
 }
