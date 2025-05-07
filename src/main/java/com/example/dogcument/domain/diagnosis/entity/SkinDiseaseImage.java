@@ -26,4 +26,10 @@ public class SkinDiseaseImage {
 
 	private String url;
 	private LocalDateTime uploadedDate;
+
+	public SkinDiseaseImage(Dog dog, String url) {
+		this.dog = dog;
+		this.url = url;
+		this.uploadedDate = LocalDateTime.now();
+	}
 }

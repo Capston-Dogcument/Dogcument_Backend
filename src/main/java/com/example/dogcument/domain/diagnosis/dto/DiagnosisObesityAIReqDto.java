@@ -14,7 +14,6 @@ public class DiagnosisObesityAIReqDto {
 
 	@Getter
 	public class DogInfo {
-		private int age;
 		private String breed;
 		private double weight;
 	}
@@ -22,7 +21,6 @@ public class DiagnosisObesityAIReqDto {
 		this.dogId = id;
 
 		this.dogInfo = new DogInfo();
-		this.dogInfo.age = dog.getAge();
 		this.dogInfo.breed = dog.getBreed();
 		this.dogInfo.weight = dog.getWeight();
 
