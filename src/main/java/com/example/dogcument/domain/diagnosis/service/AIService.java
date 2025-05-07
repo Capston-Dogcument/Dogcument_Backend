@@ -98,9 +98,10 @@ public class AIService {
 
 			String json = response.getBody();
 
+			System.out.println(json);
+
 			ObjectMapper objectMapper = new ObjectMapper();
 			DiagnosisObesityAIResDto resDto = objectMapper.readValue(json, DiagnosisObesityAIResDto.class);
-
 			return resDto;
 
 		} catch (HttpClientErrorException.UnprocessableEntity e) {
