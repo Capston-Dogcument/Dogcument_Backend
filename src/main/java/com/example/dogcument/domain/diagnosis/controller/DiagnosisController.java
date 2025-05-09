@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityResultResDto;
+import com.example.dogcument.domain.diagnosis.dto.DiagnosisSkinResultResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidateSkinImgResDto;
 import com.example.dogcument.domain.diagnosis.service.DiagnosisService;
@@ -60,5 +61,11 @@ public class DiagnosisController {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@PostMapping("/skin/{dogId}")
+	public ResponseEntity<DiagnosisSkinResultResDto> diagnosisSkinDiseases(@PathVariable Long dogId) {
+		DiagnosisSkinResultResDto resDto = diagnosisService.diagnosisSkinDiseases(dogId);
+		return ResponseEntity.ok(resDto);
 	}
 }

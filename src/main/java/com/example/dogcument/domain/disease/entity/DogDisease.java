@@ -25,4 +25,9 @@ public class DogDisease {
 	@ManyToOne
 	@JoinColumn(name = "disease_id")
 	private Disease disease;
+
+	public DogDisease(Dog dog, Disease disease) {
+		this.dog = dog;
+		this.disease = disease;
+	}
 }
