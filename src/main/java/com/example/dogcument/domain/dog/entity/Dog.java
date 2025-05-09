@@ -81,4 +81,8 @@ public class Dog {
 	public void saveObesity(String obesity) {
 		this.obesityLevel = Obesity.valueOf(obesity.trim());
 	}
+
+	public void saveAge(int age) {
+		this.age = age;
+	}
 }
