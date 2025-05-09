@@ -3,22 +3,22 @@ package com.example.dogcument.domain.diagnosis.service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,10 +26,15 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityAIReqDto;
 import com.example.dogcument.domain.diagnosis.dto.AIErrorResDto;
 import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityAIResDto;
+import com.example.dogcument.domain.diagnosis.dto.DiagnosisSkinAIReqDto;
+import com.example.dogcument.domain.diagnosis.dto.DiagnosisSkinAIResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResponse;
 import com.example.dogcument.domain.diagnosis.dto.ValidateSkinAIResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidationResult;
 import com.example.dogcument.domain.dog.entity.Dog;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -155,4 +160,48 @@ public class AIService {
 		return resDto;
 	}
 
+
+	public DiagnosisSkinAIResDto diagnosisSkinDisease(Dog dog, String imgUrl) {
+		DiagnosisSkinAIReqDto reqDto = new DiagnosisSkinAIReqDto(dog.getId().toString(), imgUrl);
+
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			HttpEntity<DiagnosisSkinAIReqDto> request = new HttpEntity<>(reqDto, headers);
+
+			ResponseEntity<DiagnosisSkinAIResDto> response = restTemplate.postForEntity(
+				skinAIServer + "/predict",
+				request, DiagnosisSkinAIResDto.class
+			);
+			return response.getBody();
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
+			System.out.println(e.getMessage());
+			String errorJson = e.getResponseBodyAsString();
+			try {
+				ObjectMapper objectMapper = new ObjectMapper();
+				JsonNode node = objectMapper.readTree(errorJson);
+
+				if (node.has("detail")) {
+					String message = node.get("detail").asText();
+					throw new RuntimeException("AI 서버 응답 오류: " + message);
+				} else if (node.get("detail").isArray()) {
+					StringBuilder errorMsg = new StringBuilder("AI 필드 오류: \n");
+					for(JsonNode err: node.get("detail")) {
+						errorMsg.append("- ")
+							.append(String.join(".", StreamSupport
+								.stream(err.get("loc").spliterator(), false)
+								.map(JsonNode::asText).toList()))
+							.append(": ")
+							.append(err.get("msg").asText())
+							.append("\n");
+					}
+					throw new RuntimeException(errorMsg.toString());
+				}
+				throw new RuntimeException("알 수 없는 응답 형식: " + errorJson);
+			} catch (JsonProcessingException ex) {
+				throw new RuntimeException("응답 파싱 실패: " + errorJson, ex);
+			}
+		}
+	}
 }

@@ -14,6 +14,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityAIResDto;
 import com.example.dogcument.domain.diagnosis.dto.DiagnosisObesityResultResDto;
+import com.example.dogcument.domain.diagnosis.dto.DiagnosisSkinAIResDto;
+import com.example.dogcument.domain.diagnosis.dto.DiagnosisSkinResultResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResponse;
 import com.example.dogcument.domain.diagnosis.dto.ValidateImgsResDto;
 import com.example.dogcument.domain.diagnosis.dto.ValidateSkinAIResDto;
@@ -23,6 +25,10 @@ import com.example.dogcument.domain.diagnosis.entity.ObesityImage;
 import com.example.dogcument.domain.diagnosis.entity.SkinDiseaseImage;
 import com.example.dogcument.domain.diagnosis.repository.ObesityImageRepository;
 import com.example.dogcument.domain.diagnosis.repository.SkinDiseaseImageRepository;
+import com.example.dogcument.domain.disease.Repository.DiseaseRepository;
+import com.example.dogcument.domain.disease.Repository.DogDiseaseRepository;
+import com.example.dogcument.domain.disease.entity.Disease;
+import com.example.dogcument.domain.disease.entity.DogDisease;
 import com.example.dogcument.domain.dog.entity.Dog;
 import com.example.dogcument.domain.dog.repository.DogInfoRepository;
 import com.example.dogcument.domain.s3.S3Service;
@@ -37,14 +43,19 @@ public class DiagnosisService {
 	private final DogInfoRepository dogInfoRepository;
 	private final ObesityImageRepository obesityImageRepository;
 	private final SkinDiseaseImageRepository skinDiseaseImageRepository;
+	private final DiseaseRepository diseaseRepository;
+	private final DogDiseaseRepository dogDiseaseRepository;
 
 	public DiagnosisService(AIService aiService, S3Service s3Service, DogInfoRepository dogInfoRepository,
-		ObesityImageRepository obesityImageRepository, SkinDiseaseImageRepository skinDiseaseImageRepository) {
+		ObesityImageRepository obesityImageRepository, SkinDiseaseImageRepository skinDiseaseImageRepository,
+		DiseaseRepository diseaseRepository, DogDiseaseRepository dogDiseaseRepository) {
 		this.aiService = aiService;
 		this.s3Service = s3Service;
 		this.dogInfoRepository = dogInfoRepository;
 		this.obesityImageRepository = obesityImageRepository;
 		this.skinDiseaseImageRepository = skinDiseaseImageRepository;
+		this.diseaseRepository = diseaseRepository;
+		this.dogDiseaseRepository = dogDiseaseRepository;
 	}
 
 	private static final List<String> PHOTO_TYPE_ORDER = List.of("front", "left", "back", "right", "top");
@@ -112,5 +123,35 @@ public class DiagnosisService {
 		}
 
 		return new ValidateSkinImgResDto(uploadedUrl);
+	}
+
+	public DiagnosisSkinResultResDto diagnosisSkinDiseases(Long dogId) {
+		Dog dog = dogInfoRepository.findById(dogId)
+			.orElseThrow(()-> new EntityNotFoundException("해당 ID의 강아지를 찾을 수 없습니다"));
+
+		SkinDiseaseImage img = skinDiseaseImageRepository.findByDogId(dogId)
+			.orElseThrow(()-> new EntityNotFoundException("피부 질환 이미지가 존재하지 않습니다"));
+
+		DiagnosisSkinAIResDto aiResDto = aiService.diagnosisSkinDisease(dog, img.getUrl());
+
+		System.out.println(aiResDto.getPredictions());
+
+		List<String> diseaseList = new ArrayList<>();
+
+		for (String label: aiResDto.getPredictions().values()) {
+			System.out.println(label);
+			if (label == null || label.isBlank() || label.equals("무증상")) continue;
+
+			Disease disease = diseaseRepository.findByName(label)
+				.orElseGet(() -> diseaseRepository.save(new Disease(label)));
+
+			if (!dogDiseaseRepository.existsByDogAndDisease(dog, disease)) {
+				dogDiseaseRepository.save(new DogDisease(dog, disease));
+			}
+
+			diseaseList.add(disease.getName());
+		}
+
+		return new DiagnosisSkinResultResDto(dog.getId(), diseaseList);
 	}
 }

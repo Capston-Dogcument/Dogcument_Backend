@@ -18,4 +18,8 @@ public class Disease {
 
 	@Column(nullable=false)
 	private String name;
+
+	public Disease(String name) {
+		this.name = name;
+	}
 }
