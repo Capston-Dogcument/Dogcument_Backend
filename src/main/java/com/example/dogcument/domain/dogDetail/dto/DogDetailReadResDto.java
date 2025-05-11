@@ -30,4 +30,6 @@ public class DogDetailReadResDto {
 
 	private Integer age;
 	private Integer avgAge;
+
+	private String profileImg;
 }

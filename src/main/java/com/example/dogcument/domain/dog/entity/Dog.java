@@ -47,6 +47,8 @@ public class Dog {
 
 	private String dogCondition;
 
+	private String profileImg;
+
 	public Dog(String name, String breed, Gender gender, LocalDate intakeDate, Double weight) {
 		this.name = name;
 		this.breed = breed;
@@ -88,5 +90,9 @@ public class Dog {
 
 	public void saveNeutered(Boolean neutered) {
 		this.neutered = neutered;
+	}
+
+	public void saveProfileImg(String img) {
+		this.profileImg = img;
 	}
 }

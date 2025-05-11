@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.dogcument.domain.diagnosis.entity.ObesityImage;
+import com.example.dogcument.domain.diagnosis.repository.ObesityImageRepository;
 import com.example.dogcument.domain.disease.Repository.DiseaseRepository;
 import com.example.dogcument.domain.disease.Repository.DogDiseaseRepository;
 import com.example.dogcument.domain.disease.dto.DiseaseDto;
@@ -50,12 +52,14 @@ public class DogDetailService {
 	private final MedicationRepository medicationRepository;
 	private final DogMedicationRepository dogMedicationRepository;
 	private final FeedingRepository feedingRepository;
+	private final ObesityImageRepository obesityImageRepository;
 
 	public DogDetailService(DogInfoRepository dogInfoRepository, DogDiseaseRepository dogDiseaseRepository,
 		DiseaseRepository diseaseRepository, VaccinationRepository vaccinationRepository,
 		DogVaccinationRepository dogVaccinationRepository, SupplementRepository supplementRepository,
 		DogSupplementRepository dogSupplementRepository, MedicationRepository medicationRepository,
-		DogMedicationRepository dogMedicationRepository, FeedingRepository feedingRepository) {
+		DogMedicationRepository dogMedicationRepository, FeedingRepository feedingRepository,
+		ObesityImageRepository obesityImageRepository) {
 		this.dogDiseaseRepository = dogDiseaseRepository;
 		this.dogInfoRepository = dogInfoRepository;
 		this.diseaseRepository = diseaseRepository;
@@ -66,6 +70,7 @@ public class DogDetailService {
 		this.medicationRepository = medicationRepository;
 		this.dogMedicationRepository = dogMedicationRepository;
 		this.feedingRepository = feedingRepository;
+		this.obesityImageRepository = obesityImageRepository;
 	}
 
 	public DogDetailCreateResDto saveDogDetail(Long dogId, DogDetailCreateReqDto reqDto) {
@@ -143,6 +148,20 @@ public class DogDetailService {
 			}
 		}
 
+		// 프로필 이미지 생성
+		if(dog.getProfileImg() == null) {
+			boolean isExist = obesityImageRepository.existsById(dog.getId());
+			if (isExist) {
+				List<ObesityImage> obesityImageList = obesityImageRepository.findAllByDogId(dog.getId());
+				for (ObesityImage obesityImage : obesityImageList) {
+					if (obesityImage.getAngle() == ObesityImage.Angle.FRONT) {
+						dog.saveProfileImg(obesityImage.getUrl());
+						dogInfoRepository.save(dog);
+					}
+				}
+			}
+		}
+
 		return DogDetailCreateResDto.builder()
 			.dogId(dog.getId())
 			.isNeutered(dog.getNeutered())
@@ -191,6 +210,7 @@ public class DogDetailService {
 			.weight(dog.getWeight())
 			.age(dog.getAge())
 			.avgAge(avgAge)
+			.profileImg(dog.getProfileImg())
 			.build();
 	}
 }
