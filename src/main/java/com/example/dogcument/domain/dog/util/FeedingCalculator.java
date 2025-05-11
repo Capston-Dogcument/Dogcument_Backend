@@ -13,7 +13,7 @@ public class FeedingCalculator {
 			this.wetFoodAmount = wetFoodAmount;
 		}
 
-		public double getDrtFoodAmount() {
+		public double getDryFoodAmount() {
 			return drtFoodAmount;
 		}
 		public double getWetFoodAmount() {

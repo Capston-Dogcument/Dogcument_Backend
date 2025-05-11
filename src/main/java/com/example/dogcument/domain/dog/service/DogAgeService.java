@@ -48,6 +48,7 @@ public class DogAgeService {
 
 		int age = DogAgeEstimator.estimateAge(reqDto);
 		dog.saveAge(age);
+		dogInfoRepository.save(dog);
 		return new PredictAgeResDto(dog.getId(), age);
 	}
 }

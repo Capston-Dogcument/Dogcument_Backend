@@ -11,9 +11,14 @@ import com.example.dogcument.domain.disease.dto.DiseaseDto;
 import com.example.dogcument.domain.disease.entity.Disease;
 import com.example.dogcument.domain.disease.entity.DogDisease;
 import com.example.dogcument.domain.dog.entity.Dog;
+import com.example.dogcument.domain.dog.entity.Feeding;
 import com.example.dogcument.domain.dog.repository.DogInfoRepository;
+import com.example.dogcument.domain.dog.repository.FeedingRepository;
+import com.example.dogcument.domain.dog.util.AverageAgeGetter;
+import com.example.dogcument.domain.dog.util.FeedingCalculator;
 import com.example.dogcument.domain.dogDetail.dto.DogDetailCreateReqDto;
 import com.example.dogcument.domain.dogDetail.dto.DogDetailCreateResDto;
+import com.example.dogcument.domain.dogDetail.dto.DogDetailReadResDto;
 import com.example.dogcument.domain.medication.dto.MedicationDto;
 import com.example.dogcument.domain.medication.entity.DogMedication;
 import com.example.dogcument.domain.medication.entity.Medication;
@@ -44,12 +49,13 @@ public class DogDetailService {
 	private final DogSupplementRepository dogSupplementRepository;
 	private final MedicationRepository medicationRepository;
 	private final DogMedicationRepository dogMedicationRepository;
+	private final FeedingRepository feedingRepository;
 
 	public DogDetailService(DogInfoRepository dogInfoRepository, DogDiseaseRepository dogDiseaseRepository,
 		DiseaseRepository diseaseRepository, VaccinationRepository vaccinationRepository,
 		DogVaccinationRepository dogVaccinationRepository, SupplementRepository supplementRepository,
 		DogSupplementRepository dogSupplementRepository, MedicationRepository medicationRepository,
-		DogMedicationRepository dogMedicationRepository, DogMedicationRepository dogMedicationRepository1) {
+		DogMedicationRepository dogMedicationRepository, FeedingRepository feedingRepository) {
 		this.dogDiseaseRepository = dogDiseaseRepository;
 		this.dogInfoRepository = dogInfoRepository;
 		this.diseaseRepository = diseaseRepository;
@@ -58,7 +64,8 @@ public class DogDetailService {
 		this.supplementRepository = supplementRepository;
 		this.dogSupplementRepository = dogSupplementRepository;
 		this.medicationRepository = medicationRepository;
-		this.dogMedicationRepository = dogMedicationRepository1;
+		this.dogMedicationRepository = dogMedicationRepository;
+		this.feedingRepository = feedingRepository;
 	}
 
 	public DogDetailCreateResDto saveDogDetail(Long dogId, DogDetailCreateReqDto reqDto) {
@@ -145,6 +152,45 @@ public class DogDetailService {
 			.supplement(supplementDtoList)
 			.takesMedication(reqDto.getTakesMedication())
 			.medication(medicationDtoList)
+			.build();
+	}
+
+	public DogDetailReadResDto readDogDetail(Long dogId) {
+		Dog dog = dogInfoRepository.findById(dogId)
+			.orElseThrow(()-> new EntityNotFoundException("해당 ID의 강아지를 찾을 수 없습니다"));
+
+		Boolean isVaccinated = dogVaccinationRepository.existsByDogId(dog.getId());
+
+		List<DiseaseDto> diseaseList = dogDiseaseRepository.findAllByDog(dog).stream()
+			.map(dd -> new DiseaseDto(dd.getDisease())).toList();
+
+		List<MedicationDto> medicationList = dogMedicationRepository.findAllByDogId(dog.getId())
+			.stream().map(MedicationDto::new).toList();
+
+		Feeding feeding = feedingRepository.findByDog(dog)
+			.orElse(null);
+
+		if (feeding == null) {
+			FeedingCalculator.FeedAmount calculated = FeedingCalculator.calculateFeedAmount(dog);
+			feeding = new Feeding(dog, calculated.getDryFoodAmount(), calculated.getWetFoodAmount());
+			feedingRepository.save(feeding);
+		}
+
+		int avgAge = AverageAgeGetter.getAverageAge(dog);
+
+		return DogDetailReadResDto.builder()
+			.dogId(dog.getId())
+			.dogName(dog.getName())
+			.isVaccinated(isVaccinated)
+			.isNeutered(dog.getNeutered())
+			.disease(diseaseList)
+			.dryFoodAmount(feeding.getDryFoodAmount())
+			.wetFoodAmount(feeding.getWetFoodAmount())
+			.medication(medicationList)
+			.obesityLevel(dog.getObesityLevel())
+			.weight(dog.getWeight())
+			.age(dog.getAge())
+			.avgAge(avgAge)
 			.build();
 	}
 }
