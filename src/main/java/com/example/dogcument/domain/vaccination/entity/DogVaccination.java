@@ -29,4 +29,10 @@ public class DogVaccination {
 
 	@Column(nullable=false)
 	private Boolean status;
+
+	public DogVaccination(Dog dog, Vaccination vaccination) {
+		this.dog = dog;
+		this.vaccination = vaccination;
+		status = Boolean.TRUE;
+	}
 }

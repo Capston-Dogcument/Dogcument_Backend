@@ -26,7 +26,13 @@ public class DogSupplement {
 	@JoinColumn(name = "supplement_id")
 	private Supplement supplement;
 
-	private Double doseAmount;
-	private Integer dosePerDay;
-	private String doseUnit;
+	private Integer intervalDay;
+	private Integer timesPerInterval;
+
+	public DogSupplement(Dog dog, Supplement supplement, int intervalDay, int timesPerInterval) {
+		this.dog = dog;
+		this.supplement = supplement;
+		this.intervalDay = intervalDay;
+		this.timesPerInterval = timesPerInterval;
+	}
 }

@@ -18,4 +18,8 @@ public class Supplement {
 
 	@Column(nullable=false)
 	private String name;
+
+	public Supplement(String name) {
+		this.name = name;
+	}
 }

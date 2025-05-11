@@ -18,4 +18,8 @@ public class Vaccination {
 
 	@Column(nullable=false)
 	private String name;
+
+	public Vaccination(String name) {
+		this.name = name;
+	}
 }
