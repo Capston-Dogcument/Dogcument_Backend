@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class HomeResDto {
-	private Integer totalDogs;
+	private Long totalDogs;
 	private LocalDateTime nextFeedingTime;
 
 	private Double neuteredRate;
