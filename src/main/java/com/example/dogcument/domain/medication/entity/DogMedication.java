@@ -1,5 +1,7 @@
 package com.example.dogcument.domain.medication.entity;
 
+import java.time.LocalDate;
+
 import com.example.dogcument.domain.dog.entity.Dog;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +28,18 @@ public class DogMedication {
 	@JoinColumn(name = "medication_id")
 	private Medication medication;
 
-	private Double doseAmount;
-	private Integer dosePerDay;
-	private String doseUnit;
+	private Integer intervalDay;
+	private Integer timesPerInterval;
+
+	private LocalDate doseStartDate;
+	private LocalDate doseEndDate;
+
+	public DogMedication(Dog dog, Medication medication, Integer intervalDay, Integer timesPerInterval, LocalDate doseStartDate, LocalDate doseEndDate) {
+		this.dog = dog;
+		this.medication = medication;
+		this.intervalDay = intervalDay;
+		this.timesPerInterval = timesPerInterval;
+		this.doseStartDate = doseStartDate;
+		this.doseEndDate = doseEndDate;
+	}
 }

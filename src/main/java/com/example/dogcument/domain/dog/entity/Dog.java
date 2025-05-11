@@ -85,4 +85,8 @@ public class Dog {
 	public void saveAge(int age) {
 		this.age = age;
 	}
+
+	public void saveNeutered(Boolean neutered) {
+		this.neutered = neutered;
+	}
 }

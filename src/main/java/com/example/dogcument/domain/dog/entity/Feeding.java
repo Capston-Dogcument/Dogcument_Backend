@@ -22,4 +22,12 @@ public class Feeding {
 
 	private Double dryFoodAmount;
 	private Double wetFoodAmount;
+
+
+	public Feeding(Dog dog, Double dryFoodAmount, Double wetFoodAmount) {
+		this.dog = dog;
+		this.dryFoodAmount = dryFoodAmount;
+		this.wetFoodAmount = wetFoodAmount;
+
+	}
 }
