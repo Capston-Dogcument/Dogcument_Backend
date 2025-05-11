@@ -113,7 +113,7 @@ public class DogDetailService {
 				Supplement supplement = supplementRepository.findByName(supplementName)
 					.orElseGet(() -> supplementRepository.save(new Supplement(supplementName)));
 
-				DogSupplement dogSupplement = new DogSupplement(dog, supplement, s.getIntervalDay(), s.getTimesPerInterval());
+				DogSupplement dogSupplement = new DogSupplement(dog, supplement, s.getIntervalDay(), s.getTimesPerInterval(), s.getDoseStartDate(), s.getDoseEndDate());
 				dogSupplementRepository.save(dogSupplement);
 
 				supplementDtoList.add(new SupplementDto(dogSupplement));
@@ -129,7 +129,7 @@ public class DogDetailService {
 				Medication medication = medicationRepository.findByName(medicationName)
 					.orElseGet(() -> medicationRepository.save(new Medication(medicationName)));
 
-				DogMedication dogMedication = new DogMedication(dog, medication, m.getIntervalDay(), m.getTimesPerInterval());
+				DogMedication dogMedication = new DogMedication(dog, medication, m.getIntervalDay(), m.getTimesPerInterval(), m.getDoseStartDate(), m.getDoseEndDate());
 				dogMedicationRepository.save(dogMedication);
 
 				medicationDtoList.add(new MedicationDto(dogMedication));
