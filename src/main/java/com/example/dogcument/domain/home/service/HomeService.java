@@ -30,8 +30,8 @@ public class HomeService {
 
 		LocalDateTime nextFeedingTime = FeedingTimeCalculator.getNextFeedingTime();
 
-		double neuteredRate = (dogInfoRepository.countByNeuteredTrue() / (totalDogs * 1.0)) * 100;
-		double vaccinationRate = (dogVaccinationRepository.countVaccinatedDogs() / (totalDogs * 1.0)) * 100;
+		double neuteredRate = Math.round((dogInfoRepository.countByNeuteredTrue() / (totalDogs * 1.0)) * 100 * 10) / 10.0;
+		double vaccinationRate = Math.round((dogVaccinationRepository.countVaccinatedDogs() / (totalDogs * 1.0)) * 100 * 10) / 10.0;
 
 
 		return HomeResDto.builder()
