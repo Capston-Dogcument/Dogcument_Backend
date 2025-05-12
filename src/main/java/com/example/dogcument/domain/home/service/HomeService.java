@@ -24,14 +24,14 @@ public class HomeService {
 
 	public HomeResDto getHome() {
 		List<HomeDogInfoDto> homeDogInfoDtoList = dogInfoRepository.findTop10ByOrderByIntakeDateDesc().stream()
-			.map(dog -> new HomeDogInfoDto(dog.getName(), dog.getGender().toString(), dog.getAge(), dog.getProfileImg())).toList();
+			.map(dog -> new HomeDogInfoDto(dog.getId(), dog.getName(), dog.getGender().toString(), dog.getAge(), dog.getProfileImg())).toList();
 
 		long totalDogs = dogInfoRepository.count();
 
 		LocalDateTime nextFeedingTime = FeedingTimeCalculator.getNextFeedingTime();
 
-		double neuteredRate = (dogInfoRepository.countByNeuteredTrue() / (totalDogs * 1.0)) * 100;
-		double vaccinationRate = (dogVaccinationRepository.countVaccinatedDogs() / (totalDogs * 1.0)) * 100;
+		double neuteredRate = Math.round((dogInfoRepository.countByNeuteredTrue() / (totalDogs * 1.0)) * 100 * 10) / 10.0;
+		double vaccinationRate = Math.round((dogVaccinationRepository.countVaccinatedDogs() / (totalDogs * 1.0)) * 100 * 10) / 10.0;
 
 
 		return HomeResDto.builder()
