@@ -186,6 +186,9 @@ public class DogDetailService {
 		List<MedicationDto> medicationList = dogMedicationRepository.findAllByDogId(dog.getId())
 			.stream().map(MedicationDto::new).toList();
 
+		List<SupplementDto> supplementList = dogSupplementRepository.findAllByDogId(dog.getId())
+			.stream().map(SupplementDto::new).toList();
+
 		Feeding feeding = feedingRepository.findByDog(dog)
 			.orElse(null);
 
@@ -206,6 +209,7 @@ public class DogDetailService {
 			.dryFoodAmount(feeding.getDryFoodAmount())
 			.wetFoodAmount(feeding.getWetFoodAmount())
 			.medication(medicationList)
+			.supplement(supplementList)
 			.obesityLevel(dog.getObesityLevel())
 			.weight(dog.getWeight())
 			.age(dog.getAge())
