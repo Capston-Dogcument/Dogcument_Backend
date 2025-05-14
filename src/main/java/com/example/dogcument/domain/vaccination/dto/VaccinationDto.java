@@ -11,6 +11,6 @@ public class VaccinationDto {
 	private String name;
 
 	public VaccinationDto(Vaccination vaccination) {
-		this.name = vaccination.getName();
+		this.name = vaccination.getName().replaceAll("_", " ");
 	}
 }
