@@ -141,6 +141,7 @@ public class DogDetailService {
 				Medication medication = medicationRepository.findByName(medicationName)
 					.orElseGet(() -> medicationRepository.save(new Medication(medicationName)));
 
+
 				DogMedication dogMedication = new DogMedication(dog, medication, m.getIntervalDay(), m.getTimesPerInterval(), m.getDoseStartDate(), m.getDoseEndDate());
 				dogMedicationRepository.save(dogMedication);
 
