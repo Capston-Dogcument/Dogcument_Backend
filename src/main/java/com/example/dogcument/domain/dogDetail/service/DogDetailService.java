@@ -141,6 +141,7 @@ public class DogDetailService {
 				Medication medication = medicationRepository.findByName(medicationName)
 					.orElseGet(() -> medicationRepository.save(new Medication(medicationName)));
 
+
 				DogMedication dogMedication = new DogMedication(dog, medication, m.getIntervalDay(), m.getTimesPerInterval(), m.getDoseStartDate(), m.getDoseEndDate());
 				dogMedicationRepository.save(dogMedication);
 
@@ -186,6 +187,9 @@ public class DogDetailService {
 		List<MedicationDto> medicationList = dogMedicationRepository.findAllByDogId(dog.getId())
 			.stream().map(MedicationDto::new).toList();
 
+		List<SupplementDto> supplementList = dogSupplementRepository.findAllByDogId(dog.getId())
+			.stream().map(SupplementDto::new).toList();
+
 		Feeding feeding = feedingRepository.findByDog(dog)
 			.orElse(null);
 
@@ -206,6 +210,7 @@ public class DogDetailService {
 			.dryFoodAmount(feeding.getDryFoodAmount())
 			.wetFoodAmount(feeding.getWetFoodAmount())
 			.medication(medicationList)
+			.supplement(supplementList)
 			.obesityLevel(dog.getObesityLevel())
 			.weight(dog.getWeight())
 			.age(dog.getAge())

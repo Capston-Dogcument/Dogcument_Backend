@@ -9,6 +9,6 @@ public class DiseaseDto {
 	private String name;
 
 	public DiseaseDto(Disease disease) {
-		this.name = disease.getName();
+		this.name = disease.getName().replaceAll("_", " ");
 	}
 }

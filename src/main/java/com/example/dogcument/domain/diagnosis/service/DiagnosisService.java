@@ -149,7 +149,7 @@ public class DiagnosisService {
 				dogDiseaseRepository.save(new DogDisease(dog, disease));
 			}
 
-			diseaseList.add(disease.getName());
+			diseaseList.add(disease.getName().replaceAll("_", " "));
 		}
 
 		return new DiagnosisSkinResultResDto(dog.getId(), diseaseList);

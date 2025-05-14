@@ -5,6 +5,7 @@ import java.util.List;
 import com.example.dogcument.domain.disease.dto.DiseaseDto;
 import com.example.dogcument.domain.dog.entity.Dog;
 import com.example.dogcument.domain.medication.dto.MedicationDto;
+import com.example.dogcument.domain.supplement.dto.SupplementDto;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Builder;
@@ -24,6 +25,7 @@ public class DogDetailReadResDto {
 	private Double wetFoodAmount;
 
 	private List<MedicationDto> medication;
+	private List<SupplementDto> supplement;
 
 	private Dog.Obesity obesityLevel;
 	private Double weight;
