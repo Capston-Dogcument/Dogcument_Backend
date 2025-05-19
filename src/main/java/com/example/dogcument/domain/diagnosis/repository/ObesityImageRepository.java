@@ -9,4 +9,5 @@ import com.example.dogcument.domain.diagnosis.entity.ObesityImage;
 
 public interface ObesityImageRepository extends JpaRepository<ObesityImage, Long> {
 	List<ObesityImage> findAllByDogId(Long dogId);
+	void deleteAllByDogId(Long dogId);
 }

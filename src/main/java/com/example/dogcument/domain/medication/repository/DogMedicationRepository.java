@@ -8,4 +8,5 @@ import com.example.dogcument.domain.medication.entity.DogMedication;
 
 public interface DogMedicationRepository extends JpaRepository<DogMedication, Long> {
 	List<DogMedication> findAllByDogId(Long id);
+	void deleteAllByDogId(Long id);
 }

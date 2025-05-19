@@ -9,4 +9,5 @@ import com.example.dogcument.domain.dog.entity.Feeding;
 
 public interface FeedingRepository extends JpaRepository<Feeding, Long> {
 	Optional<Feeding> findByDog(Dog dog);
+	void deleteAllByDog(Dog dog);
 }
