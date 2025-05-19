@@ -12,6 +12,7 @@ public interface DogInfoRepository extends JpaRepository<Dog, Integer> {
 	Optional<Dog> findById(Long id);
 
 	List<Dog> findTop10ByOrderByIntakeDateDesc();
+	List<Dog> findByOrderByIntakeDateDesc();
 
 	long count();
 

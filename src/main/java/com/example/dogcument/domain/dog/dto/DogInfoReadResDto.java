@@ -3,8 +3,8 @@ package com.example.dogcument.domain.dog.dto;
 import java.time.LocalDate;
 
 import com.example.dogcument.domain.dog.entity.Dog;
+import com.example.dogcument.domain.dog.util.GetBreedName;
 
-import jdk.jshell.Snippet;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,7 +26,7 @@ public class DogInfoReadResDto {
 		return DogInfoReadResDto.builder()
 			.id(dog.getId())
 			.name(dog.getName())
-			.breed(dog.getBreed())
+			.breed(GetBreedName.getBreed(dog.getBreed()))
 			.gender(dog.getGender())
 			.intakeDate(dog.getIntakeDate())
 			.neutered(dog.getNeutered())
