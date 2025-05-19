@@ -12,4 +12,5 @@ import com.example.dogcument.domain.dog.entity.Dog;
 public interface DogDiseaseRepository extends JpaRepository<DogDisease, Long> {
 	Boolean existsByDogAndDisease(Dog dog, Disease disease);
 	List<DogDisease> findAllByDog(Dog dog);
+	void deleteAllByDog(Dog dog);
 }

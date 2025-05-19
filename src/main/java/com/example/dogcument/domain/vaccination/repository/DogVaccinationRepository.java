@@ -14,4 +14,6 @@ public interface DogVaccinationRepository extends JpaRepository<DogVaccination, 
 
 	@Query("SELECT COUNT(DISTINCT dv.dog.id) FROM DogVaccination dv")
 	long countVaccinatedDogs();
+
+	void deleteAllByDogId(Long dogId);
 }

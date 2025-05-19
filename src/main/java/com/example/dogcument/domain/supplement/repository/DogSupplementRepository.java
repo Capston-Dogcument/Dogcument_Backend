@@ -8,4 +8,5 @@ import com.example.dogcument.domain.supplement.entity.DogSupplement;
 
 public interface DogSupplementRepository extends JpaRepository<DogSupplement, Long> {
 	List<DogSupplement> findAllByDogId(Long id);
+	void deleteAllByDogId(Long id);
 }
