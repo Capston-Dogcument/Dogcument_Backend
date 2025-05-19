@@ -134,13 +134,12 @@ public class DiagnosisService {
 
 		DiagnosisSkinAIResDto aiResDto = aiService.diagnosisSkinDisease(dog, img.getUrl());
 
-		System.out.println(aiResDto.getPredictions());
-
 		List<String> diseaseList = new ArrayList<>();
 
 		for (String label: aiResDto.getPredictions().values()) {
-			System.out.println(label);
 			if (label == null || label.isBlank() || label.equals("무증상")) continue;
+
+			String cleanedLabel = label.replaceAll("_", " ");
 
 			Disease disease = diseaseRepository.findByName(label)
 				.orElseGet(() -> diseaseRepository.save(new Disease(label)));
@@ -149,7 +148,9 @@ public class DiagnosisService {
 				dogDiseaseRepository.save(new DogDisease(dog, disease));
 			}
 
-			diseaseList.add(disease.getName().replaceAll("_", " "));
+			if (!diseaseList.contains(cleanedLabel)) {
+				diseaseList.add(cleanedLabel);
+			}
 		}
 
 		return new DiagnosisSkinResultResDto(dog.getId(), diseaseList);
