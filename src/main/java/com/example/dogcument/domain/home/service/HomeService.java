@@ -42,4 +42,11 @@ public class HomeService {
 			.homeDogList(homeDogInfoDtoList)
 			.build();
 	}
+
+	public List<HomeDogInfoDto> getHomeDogInfoList() {
+		List<HomeDogInfoDto> dogInfoDtoList = dogInfoRepository.findByOrderByIntakeDateDesc().stream()
+			.map(dog -> new HomeDogInfoDto(dog.getId(), dog.getName(), dog.getGender().toString(), dog.getAge(), dog.getProfileImg())).toList();
+
+		return dogInfoDtoList;
+	}
 }
