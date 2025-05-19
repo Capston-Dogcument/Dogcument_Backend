@@ -151,7 +151,7 @@ public class DogDetailService {
 
 		// 프로필 이미지 생성
 		if(dog.getProfileImg() == null) {
-			boolean isExist = obesityImageRepository.existsById(dog.getId());
+			boolean isExist = obesityImageRepository.existsByDogId(dog.getId());
 			if (isExist) {
 				List<ObesityImage> obesityImageList = obesityImageRepository.findAllByDogId(dog.getId());
 				for (ObesityImage obesityImage : obesityImageList) {
