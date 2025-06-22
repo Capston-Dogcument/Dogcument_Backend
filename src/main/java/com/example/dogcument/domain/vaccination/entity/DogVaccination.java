@@ -1,0 +1,38 @@
+package com.example.dogcument.domain.vaccination.entity;
+
+import com.example.dogcument.domain.dog.entity.Dog;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class DogVaccination {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	@ManyToOne
+	@JoinColumn(name = "dog_id")
+	private Dog dog;
+
+	@ManyToOne
+	@JoinColumn(name = "vaccination_id")
+	private Vaccination vaccination;
+
+	@Column(nullable=false)
+	private Boolean status;
+
+	public DogVaccination(Dog dog, Vaccination vaccination) {
+		this.dog = dog;
+		this.vaccination = vaccination;
+		status = Boolean.TRUE;
+	}
+}
